@@ -451,54 +451,104 @@ class KeyAuthManager: ObservableObject {
 // ==========================================
 struct TelaLoginView: View {
     @ObservedObject var auth = KeyAuthManager.shared
-    @State private var chaveDigitada = ""
+    @State private var chaveDigitada = UserDefaults.standard.string(forKey: "KeyAuth_Licenca_Salva") ?? ""
+    
+    // LINK DIRETO DA SUA IMAGEM DE FUNDO:
+    private let linkImagemFundo = "https://i.postimg.cc/Ght09HcM/Banner-Gamer-Neon-Filza-Automatico-X7.png"
     
     var body: some View {
         ZStack {
-            // Fundo sólido que cobre 100% da tela do aplicativo
-            Color(UIColor.systemBackground)
-                .ignoresSafeArea()
-            
-            VStack(spacing: 20) {
-                Text("Acesso Restrito")
-                    .font(.largeTitle)
-                    .bold()
-                
-                TextField("Cole sua License Key aqui", text: $chaveDigitada)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                    .autocapitalization(.none)
-                    .disableAutocorrection(true)
-                    .padding(.horizontal)
-                
-                if !auth.mensagemErro.isEmpty {
-                    Text(auth.mensagemErro)
-                        .foregroundColor(.red)
-                        .font(.footnote)
-                        .multilineTextAlignment(.center)
-                        .padding(.horizontal)
+            // IMAGEM DE FUNDO EM TELA CHEIA
+            AsyncImage(url: URL(string: linkImagemFundo)) { fase in
+                if let imagem = fase.image {
+                    imagem
+                        .resizable()
+                        .scaledToFill()
+                        .ignoresSafeArea()
+                } else {
+                    Color.black.ignoresSafeArea()
                 }
-                
-                Button(action: {
-                    auth.verificarLicenca(chave: chaveDigitada)
-                }) {
-                    if auth.carregando {
-                        ProgressView()
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                    } else {
-                        Text("Entrar")
-                            .bold()
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                    }
-                }
-                .background(Color.blue)
-                .foregroundColor(.white)
-                .cornerRadius(10)
-                .padding(.horizontal)
-                .disabled(auth.carregando)
             }
-            .padding()
+            
+            // DEGRADÊ ESCURO SÓ NA PARTE DE BAIXO (Para destacar o login sem tampar a arte)
+            LinearGradient(
+                gradient: Gradient(colors: [Color.clear, Color.black.opacity(0.65), Color.black.opacity(0.92)]),
+                startPoint: .top,
+                endPoint: .bottom
+            )
+            .ignoresSafeArea()
+            
+            // CAIXA DE LOGIN POSICIONADA NA PARTE INFERIOR
+            VStack {
+                Spacer()
+                
+                VStack(spacing: 14) {
+                    Text("DEMARTE IOS • LOGIN")
+                        .font(.headline)
+                        .bold()
+                        .foregroundColor(.white)
+                    
+                    // Campo de digitar a key
+                    TextField("Cola a key aqui pateta kkk", text: $chaveDigitada)
+                        .padding(14)
+                        .background(Color.black.opacity(0.75))
+                        .foregroundColor(.white)
+                        .accentColor(.purple)
+                        .cornerRadius(10)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 10)
+                                .stroke(Color.purple.opacity(0.8), lineWidth: 1.5)
+                        )
+                        .autocapitalization(.none)
+                        .disableAutocorrection(true)
+                    
+                    // Mensagem de erro (se a key for inválida)
+                    if !auth.mensagemErro.isEmpty {
+                        Text(auth.mensagemErro)
+                            .foregroundColor(.red)
+                            .font(.footnote)
+                            .bold()
+                            .multilineTextAlignment(.center)
+                    }
+                    
+                    // Botão Roxo Neon
+                    Button(action: {
+                        auth.verificarLicenca(chave: chaveDigitada)
+                    }) {
+                        if auth.carregando {
+                            ProgressView()
+                                .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                                .frame(maxWidth: .infinity)
+                                .padding(14)
+                        } else {
+                            Text("ACESSAR O PODER")
+                                .bold()
+                                .frame(maxWidth: .infinity)
+                                .padding(14)
+                        }
+                    }
+                    .background(
+                        LinearGradient(
+                            gradient: Gradient(colors: [Color.purple, Color(red: 0.45, green: 0.0, blue: 0.9)]),
+                            startPoint: .leading,
+                            endPoint: .trailing
+                        )
+                    )
+                    .foregroundColor(.white)
+                    .cornerRadius(10)
+                    .shadow(color: Color.purple.opacity(0.6), radius: 8, x: 0, y: 0)
+                    .disabled(auth.carregando)
+                }
+                .padding(20)
+                .background(Color.black.opacity(0.65))
+                .cornerRadius(18)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 18)
+                        .stroke(Color.purple.opacity(0.5), lineWidth: 1)
+                )
+                .padding(.horizontal, 20)
+                .padding(.bottom, 35)
+            }
         }
     }
 }
