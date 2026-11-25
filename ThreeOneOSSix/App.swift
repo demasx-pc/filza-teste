@@ -16,6 +16,7 @@ struct ThreeOneOSSixApp: App {
     @State private var configImportError: String?
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @StateObject private var auth = KeyAuthManager.shared
 
     init() {
         // Seed the UI language before the first view body runs. `@AppStorage`
@@ -84,8 +85,13 @@ struct ThreeOneOSSixApp: App {
     }
 
     var body: some Scene {
-        WindowGroup {
+        WindowGroup { 
             ZStack {
+                            if !auth.estaLogado {
+                TelaLoginView()
+                    .zIndex(999)
+            }
+
                 ContentView()
                     .environmentObject(appState)
                     .environmentObject(patchDraftCoordinator)
@@ -329,6 +335,157 @@ class AppState: ObservableObject {
                     }
                 }
             }
+        }
+    }
+}
+
+// ==========================================
+// 1. GERENCIADOR DE CONEXÃO COM O KEYAUTH (API 1.3)
+// ==========================================
+class KeyAuthManager: ObservableObject {
+    static let shared = KeyAuthManager()
+    
+    // PREENCHA AQUI OS 3 DADOS DO SEU PAINEL KEYAUTH:
+    private let appName = "Demarte9bp's Application"
+    private let ownerId = "gCSAX1QBSV"
+    private let appVersion = "1.0"
+    
+    @Published var estaLogado = false
+    @Published var carregando = false
+    @Published var mensagemErro = ""
+    
+    private var sessionId: String?
+    private let baseUrl = "https://keyauth.win/api/1.3/"
+    
+    private func getHWID() -> String {
+        return UIDevice.current.identifierForVendor?.uuidString ?? "iOS-Device-Unknown"
+    }
+    
+    func verificarLicenca(chave: String) {
+        let chaveLimpa = chave.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !chaveLimpa.isEmpty else {
+            self.mensagemErro = "Digite uma chave válida."
+            return
+        }
+        
+        self.carregando = true
+        self.mensagemErro = ""
+        
+        if let session = sessionId {
+            enviarLogin(chave: chaveLimpa, session: session)
+        } else {
+            inicializar { ok, msg in
+                if ok, let session = self.sessionId {
+                    self.enviarLogin(chave: chaveLimpa, session: session)
+                } else {
+                    self.carregando = false
+                    self.mensagemErro = msg
+                }
+            }
+        }
+    }
+    
+    private func inicializar(completion: @escaping (Bool, String) -> Void) {
+        let params = "type=init&ver=\(appVersion)&name=\(appName)&ownerid=\(ownerId)"
+        requisicao(params: params) { json in
+            if let success = json["success"] as? Bool, success, let session = json["sessionid"] as? String {
+                self.sessionId = session
+                completion(true, "OK")
+            } else {
+                completion(false, json["message"] as? String ?? "Erro ao conectar no servidor")
+            }
+        }
+    }
+    
+    private func enviarLogin(chave: String, session: String) {
+        let hwid = getHWID()
+        let params = "type=license&key=\(chave)&hwid=\(hwid)&sessionid=\(session)&name=\(appName)&ownerid=\(ownerId)"
+        
+        requisicao(params: params) { json in
+            self.carregando = false
+            if let success = json["success"] as? Bool, success {
+                self.estaLogado = true
+            } else {
+                self.mensagemErro = json["message"] as? String ?? "Chave inválida ou expirada"
+            }
+        }
+    }
+    
+    // Requisição via GET (Padrão da API 1.3)
+    private func requisicao(params: String, completion: @escaping ([String: Any]) -> Void) {
+        let urlCompleta = "\(baseUrl)?\(params)"
+        guard let urlEncoded = urlCompleta.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
+              let url = URL(string: urlEncoded) else { return }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        
+        URLSession.shared.dataTask(with: request) { data, _, error in
+            DispatchQueue.main.async {
+                guard let data = data, error == nil,
+                      let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else {
+                    completion(["success": false, "message": "Sem conexão com a internet"])
+                    return
+                }
+                completion(json)
+            }
+        }.resume()
+    }
+}
+
+// ==========================================
+// 2. VISUAL DA TELA DE LOGIN
+// ==========================================
+struct TelaLoginView: View {
+    @ObservedObject var auth = KeyAuthManager.shared
+    @State private var chaveDigitada = ""
+    
+    var body: some View {
+        ZStack {
+            // Fundo sólido que cobre 100% da tela do aplicativo
+            Color(UIColor.systemBackground)
+                .ignoresSafeArea()
+            
+            VStack(spacing: 20) {
+                Text("Acesso Restrito")
+                    .font(.largeTitle)
+                    .bold()
+                
+                TextField("Cole sua License Key aqui", text: $chaveDigitada)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .autocapitalization(.none)
+                    .disableAutocorrection(true)
+                    .padding(.horizontal)
+                
+                if !auth.mensagemErro.isEmpty {
+                    Text(auth.mensagemErro)
+                        .foregroundColor(.red)
+                        .font(.footnote)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal)
+                }
+                
+                Button(action: {
+                    auth.verificarLicenca(chave: chaveDigitada)
+                }) {
+                    if auth.carregando {
+                        ProgressView()
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                    } else {
+                        Text("Entrar")
+                            .bold()
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                    }
+                }
+                .background(Color.blue)
+                .foregroundColor(.white)
+                .cornerRadius(10)
+                .padding(.horizontal)
+                .disabled(auth.carregando)
+            }
+            .padding()
         }
     }
 }
