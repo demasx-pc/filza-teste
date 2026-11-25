@@ -356,9 +356,13 @@ class KeyAuthManager: ObservableObject {
     
     private var sessionId: String?
     private let baseUrl = "https://keyauth.win/api/1.3/"
+    private let chaveSalvaKey = "KeyAuth_Licenca_Salva"
     
-    private func getHWID() -> String {
-        return UIDevice.current.identifierForVendor?.uuidString ?? "iOS-Device-Unknown"
+    // Roda automaticamente assim que o aplicativo abre
+    init() {
+        if let chaveGuardada = UserDefaults.standard.string(forKey: chaveSalvaKey), !chaveGuardada.isEmpty {
+            verificarLicenca(chave: chaveGuardada)
+        }
     }
     
     func verificarLicenca(chave: String) {
@@ -385,6 +389,10 @@ class KeyAuthManager: ObservableObject {
         }
     }
     
+    private func getHWID() -> String {
+        return UIDevice.current.identifierForVendor?.uuidString ?? "iOS-Device-Unknown"
+    }
+    
     private func inicializar(completion: @escaping (Bool, String) -> Void) {
         let params = "type=init&ver=\(appVersion)&name=\(appName)&ownerid=\(ownerId)"
         requisicao(params: params) { json in
@@ -404,14 +412,18 @@ class KeyAuthManager: ObservableObject {
         requisicao(params: params) { json in
             self.carregando = false
             if let success = json["success"] as? Bool, success {
+                // SALVA A CHAVE NA MEMÓRIA DO IPHONE QUANDO O LOGIN É APROVADO
+                UserDefaults.standard.set(chave, forKey: self.chaveSalvaKey)
                 self.estaLogado = true
             } else {
+                // SE A CHAVE EXPIROU OU FOI BANIDA, APAGA DA MEMÓRIA E PEDE OUTRA
+                UserDefaults.standard.removeObject(forKey: self.chaveSalvaKey)
+                self.estaLogado = false
                 self.mensagemErro = json["message"] as? String ?? "Chave inválida ou expirada"
             }
         }
     }
     
-    // Requisição via GET (Padrão da API 1.3)
     private func requisicao(params: String, completion: @escaping ([String: Any]) -> Void) {
         let urlCompleta = "\(baseUrl)?\(params)"
         guard let urlEncoded = urlCompleta.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
@@ -432,6 +444,7 @@ class KeyAuthManager: ObservableObject {
         }.resume()
     }
 }
+
 
 // ==========================================
 // 2. VISUAL DA TELA DE LOGIN
