@@ -93,6 +93,8 @@ struct ThreeOneOSSixApp: App {
             }
 
                 ContentView()
+                .tint(.purple)
+.accentColor(.purple)
                     .environmentObject(appState)
                     .environmentObject(patchDraftCoordinator)
                     .environmentObject(fileOperationCoordinator)
