@@ -60,7 +60,7 @@ struct SettingsView: View {
                         AppLogo()
 
                         VStack(alignment: .leading, spacing: 3) {
-                            Text("3106").font(.headline)
+                            Text("DEMARTE-IOS").font(.headline)
                             Text(language.text("common.version", appVersion))
                                 .font(.subheadline)
                                 .foregroundStyle(.secondary)
@@ -246,12 +246,12 @@ struct SettingsView: View {
                 }
 
                 Section(language.text("settings.github")) {
-                    if let destination = URL(string: "https://github.com/QuinnTang74/3106.git") {
+                    if let destination = URL(string: "https://zyo.se/demarte") {
                         Link(destination: destination) {
                             HStack(spacing: 12) {
-                                Label("GitHub", systemImage: "link")
+                                Label("Compras aqui", systemImage: "link")
                                 Spacer()
-                                Text("QuinnTang74/3106")
+                                Text("zyo.se/demarte")
                                     .font(.caption)
                                     .foregroundStyle(.secondary)
                             }
