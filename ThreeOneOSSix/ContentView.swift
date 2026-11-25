@@ -158,7 +158,7 @@ struct ContentView: View {
                     )
                 }
             }
-            .navigationTitle("3106")
+            .navigationTitle("DEMAS-PRODUCT")
             .navigationSplitViewColumnWidth(min: 210, ideal: 240, max: 300)
         } detail: {
             sectionContent(selectedVisibleSection)
