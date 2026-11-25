@@ -20,7 +20,10 @@ jobs:
         run: |
           xcodebuild -version
           xcodebuild -list -project ThreeOneOSSix.xcodeproj
-
+          
+      - name: Make scripts executable
+        run: chmod +x Tests/*.sh scripts/*.sh
+        
       - name: Policy tests
         run: bash Tests/run_policy_tests.sh
 
