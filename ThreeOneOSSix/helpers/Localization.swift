@@ -3,20 +3,17 @@ import SwiftUI
 enum AppLanguage: String, CaseIterable, Identifiable {
     static let storageKey = "appLanguage"
 
+    case portuguese = "ko"
     case english = "en"
-    case vietnamese = "vi"
-    case simplifiedChinese = "zh-Hans"
-    case korean = "ko"
+
 
     var id: String { rawValue }
     var locale: Locale { Locale(identifier: rawValue) }
 
     var displayName: String {
         switch self {
+        case .portuguese: return "Português (BR)"
         case .english: return "English"
-        case .vietnamese: return "Tiếng Việt"
-        case .simplifiedChinese: return "简体中文"
-        case .korean: return "한국어"
         }
     }
 
@@ -65,7 +62,7 @@ enum AppLanguage: String, CaseIterable, Identifiable {
 }
 
 private struct AppLanguageEnvironmentKey: EnvironmentKey {
-    static let defaultValue = AppLanguage.english
+    static let defaultValue = AppLanguage.portuguese
 }
 
 extension EnvironmentValues {
