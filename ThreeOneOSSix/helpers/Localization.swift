@@ -5,7 +5,9 @@ enum AppLanguage: String, CaseIterable, Identifiable {
 
     case portuguese = "en"
     case english = "ko"
-
+    static var allCases: [AppLanguage] {
+        return [.portuguese]
+    }
     var id: String { rawValue }
     var locale: Locale { Locale(identifier: rawValue) }
 
