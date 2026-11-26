@@ -124,7 +124,7 @@ struct ThreeOneOSSixApp: App {
                     )
                     .zIndex(1)
                 }
-              BordaNeonLED(raio: 50, espessura: 3, segundosPorVolta: 5)
+              BordaNeonLED(raio: 50, espessura: 3, segundosPorVolta: 5, comBrilho: false)
                     .padding(2)
                     .ignoresSafeArea()
                     .allowsHitTesting(false)
@@ -604,6 +604,7 @@ struct BordaNeonLED: View {
     var raio: CGFloat = 18
     var espessura: CGFloat = 3
     var segundosPorVolta: Double = 3
+    var comBrilho: Bool = true
 
     private var gradiente: Gradient {
         Gradient(stops: [
@@ -617,19 +618,21 @@ struct BordaNeonLED: View {
     }
 
     var body: some View {
-        TimelineView(.animation) { contexto in
+        TimelineView(.animation(minimumInterval: 1.0 / 30.0)) { contexto in
             let tempo = contexto.date.timeIntervalSinceReferenceDate
             let fracao = tempo.truncatingRemainder(dividingBy: segundosPorVolta) / segundosPorVolta
             let angulo = Angle.degrees(fracao * 360)
 
             ZStack {
-                // brilho borrado por trás
-                RoundedRectangle(cornerRadius: raio)
-                    .strokeBorder(
-                        AngularGradient(gradient: gradiente, center: .center, angle: angulo),
-                        lineWidth: espessura + 2
-                    )
-                    .blur(radius: 6)
+                if comBrilho {
+                    // brilho borrado por trás
+                    RoundedRectangle(cornerRadius: raio)
+                        .strokeBorder(
+                            AngularGradient(gradient: gradiente, center: .center, angle: angulo),
+                            lineWidth: espessura + 2
+                        )
+                        .blur(radius: 6)
+                }
 
                 // linha nítida do LED
                 RoundedRectangle(cornerRadius: raio)
