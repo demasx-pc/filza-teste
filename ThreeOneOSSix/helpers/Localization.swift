@@ -4,8 +4,11 @@ enum AppLanguage: String, CaseIterable, Identifiable {
     static let storageKey = "appLanguage"
 
     case portuguese = "en"
-   
+    case english = "ko"
 
+    static var allCases: [AppLanguage] {
+        return [.portuguese]
+    }
 
     var id: String { rawValue }
     var locale: Locale { Locale(identifier: rawValue) }
@@ -13,7 +16,7 @@ enum AppLanguage: String, CaseIterable, Identifiable {
     var displayName: String {
         switch self {
         case .portuguese: return "Português (BR)"
-        
+        case .english: return "English"
         }
     }
 
