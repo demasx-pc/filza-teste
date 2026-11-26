@@ -124,11 +124,6 @@ struct ThreeOneOSSixApp: App {
                     )
                     .zIndex(1)
                 }
-              BordaNeonLED(raio: 50, espessura: 3, segundosPorVolta: 5, comBrilho: false)
-                    .padding(2)
-                    .ignoresSafeArea()
-                    .allowsHitTesting(false)
-                    .zIndex(2000) 
             }
             .displayIdentityAttribution(isPresented: $showAttribution, enabled: !showOnboarding)
             .sheet(isPresented: $showAttribution) {
