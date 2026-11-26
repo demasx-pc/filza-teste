@@ -427,12 +427,14 @@ class KeyAuthManager: ObservableObject {
         }
     }
     
-  /// Troca o texto cru que o servidor KeyAuth manda (geralmente em inglês)
-    /// pela mensagem em português. Se nenhum padrão bater, mostra o texto
-    /// original do servidor para você não ficar sem aviso nenhum.
-  private func traduzirMensagem(_ bruta: String) -> String {
+  /// Troca o texto cru que o servidor KeyAuth manda (em inglês)
+    /// pela mensagem em português.
+    private func traduzirMensagem(_ bruta: String) -> String {
         let texto = bruta.lowercased()
 
+        if texto.contains("sem conexão") {
+            return "Sem conexão com a internet jumento kkkk."
+        }
         if texto.contains("hwid") {
             return "Esta key já está vinculada em outro iphone."
         }
@@ -448,7 +450,16 @@ class KeyAuthManager: ObservableObject {
         if texto.contains("invalid") {
             return "Key inválida. Chama o demarte."
         }
-        return bruta
+        if texto.contains("already been used") {
+            return "Esta key já foi utilizada, compre outra com o demas."
+        }
+        if texto.contains("password") {
+            return "Key incorreta. Confira se digitou igual, com maiúsculas e minúsculas cz."
+        }
+        if texto.contains("subscription") {
+            return "Nenhuma assinatura ativa encontrada nessa key chama o demarte."
+        }
+        return "Não foi possível validar a key. Chama o chefe demas."
     }
     
     private func requisicao(params: String, completion: @escaping ([String: Any]) -> Void) {
@@ -573,9 +584,56 @@ struct TelaLoginView: View {
                     RoundedRectangle(cornerRadius: 18)
                         .stroke(Color.purple.opacity(0.5), lineWidth: 1)
                 )
+                .overlay(BordaNeonLED(raio: 18))
                 .padding(.horizontal, 20)
-                .padding(.bottom, 35)
+                Spacer()
             }
         }
+    }
+}
+
+// ==========================================
+// 3. BORDA NEON COM LED GIRANDO
+// ==========================================
+struct BordaNeonLED: View {
+    var raio: CGFloat = 18
+    var espessura: CGFloat = 3
+    var segundosPorVolta: Double = 3
+
+    private var gradiente: Gradient {
+        Gradient(stops: [
+            .init(color: .clear, location: 0.0),
+            .init(color: .clear, location: 0.55),
+            .init(color: Color.purple.opacity(0.5), location: 0.75),
+            .init(color: Color(red: 0.75, green: 0.25, blue: 1.0), location: 0.92),
+            .init(color: .white, location: 0.99),
+            .init(color: .clear, location: 1.0)
+        ])
+    }
+
+    var body: some View {
+        TimelineView(.animation) { contexto in
+            let tempo = contexto.date.timeIntervalSinceReferenceDate
+            let fracao = tempo.truncatingRemainder(dividingBy: segundosPorVolta) / segundosPorVolta
+            let angulo = Angle.degrees(fracao * 360)
+
+            ZStack {
+                // brilho borrado por trás
+                RoundedRectangle(cornerRadius: raio)
+                    .strokeBorder(
+                        AngularGradient(gradient: gradiente, center: .center, angle: angulo),
+                        lineWidth: espessura + 2
+                    )
+                    .blur(radius: 6)
+
+                // linha nítida do LED
+                RoundedRectangle(cornerRadius: raio)
+                    .strokeBorder(
+                        AngularGradient(gradient: gradiente, center: .center, angle: angulo),
+                        lineWidth: espessura
+                    )
+            }
+        }
+        .allowsHitTesting(false)
     }
 }
