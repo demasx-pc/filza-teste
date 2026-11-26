@@ -6,17 +6,13 @@ enum AppLanguage: String, CaseIterable, Identifiable {
     case portuguese = "en"
     case english = "ko"
 
-    static var allCases: [AppLanguage] {
-        return [.portuguese, .english]
-    }
-
     var id: String { rawValue }
     var locale: Locale { Locale(identifier: rawValue) }
 
     var displayName: String {
         switch self {
         case .portuguese: return "Português (BR)"
-        case .english: return "Coreano Demas"
+        case .english: return "Coreano"
         }
     }
     }
