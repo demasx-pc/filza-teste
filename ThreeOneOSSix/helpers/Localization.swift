@@ -3,8 +3,8 @@ import SwiftUI
 enum AppLanguage: String, CaseIterable, Identifiable {
     static let storageKey = "appLanguage"
 
-    case portuguese = "ko"
-    case english = "en"
+    case portuguese = "en"
+   
 
 
     var id: String { rawValue }
@@ -13,7 +13,7 @@ enum AppLanguage: String, CaseIterable, Identifiable {
     var displayName: String {
         switch self {
         case .portuguese: return "Português (BR)"
-        case .english: return "English"
+        
         }
     }
 
