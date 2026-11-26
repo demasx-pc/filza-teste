@@ -7,7 +7,7 @@ enum AppLanguage: String, CaseIterable, Identifiable {
     case english = "ko"
 
     static var allCases: [AppLanguage] {
-        return [.portuguese]
+        return [.portuguese, .english]
     }
 
     var id: String { rawValue }
@@ -16,8 +16,9 @@ enum AppLanguage: String, CaseIterable, Identifiable {
     var displayName: String {
         switch self {
         case .portuguese: return "Português (BR)"
-        case .english: return "English"
+        case .english: return "Coreano Demas"
         }
+    }
     }
 
     func text(_ key: String) -> String {
