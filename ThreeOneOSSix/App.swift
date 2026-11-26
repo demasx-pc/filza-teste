@@ -421,9 +421,34 @@ class KeyAuthManager: ObservableObject {
                 // SE A CHAVE EXPIROU OU FOI BANIDA, APAGA DA MEMÓRIA E PEDE OUTRA
                 UserDefaults.standard.removeObject(forKey: self.chaveSalvaKey)
                 self.estaLogado = false
-                self.mensagemErro = json["message"] as? String ?? "Chave inválida ou expirada"
+                let bruta = json["message"] as? String ?? "Chave inválida ou expirada"
+                self.mensagemErro = self.traduzirMensagem(bruta)
             }
         }
+    }
+    
+  /// Troca o texto cru que o servidor KeyAuth manda (geralmente em inglês)
+    /// pela mensagem em português. Se nenhum padrão bater, mostra o texto
+    /// original do servidor para você não ficar sem aviso nenhum.
+  private func traduzirMensagem(_ bruta: String) -> String {
+        let texto = bruta.lowercased()
+
+        if texto.contains("hwid") {
+            return "Esta key já está vinculada em outro iphone."
+        }
+        if texto.contains("paused") {
+            return "Sua key está pausada. Chame o demarte."
+        }
+        if texto.contains("expired") {
+            return "Sua key expirou. Chama o chefe demas."
+        }
+        if texto.contains("banned") {
+            return "Esta key foi banida, se fudeo kkkk."
+        }
+        if texto.contains("invalid") {
+            return "Key inválida. Chama o demarte."
+        }
+        return bruta
     }
     
     private func requisicao(params: String, completion: @escaping ([String: Any]) -> Void) {
@@ -491,7 +516,7 @@ struct TelaLoginView: View {
                         .foregroundColor(.white)
                     
                     // Campo de digitar a key
-                    TextField("Cola a key aqui pateta kkk", text: $chaveDigitada)
+                    TextField("Copie e cola sua key aqui irmão", text: $chaveDigitada)
                         .padding(14)
                         .background(Color.black.opacity(0.75))
                         .foregroundColor(.white)
