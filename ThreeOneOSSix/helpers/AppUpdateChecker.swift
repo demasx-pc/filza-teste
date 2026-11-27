@@ -7,21 +7,14 @@ enum AppUpdateChecker {
     /// unauthenticated API (60 req/h per IP); 30 minutes matches the typical
     /// session-cadence a user needs to learn about a fresh release.
     static let foregroundThrottleInterval: TimeInterval = 5 * 60
-    // Points at the 3106 fork; a missing repository simply disables update
-    // prompts until the final distribution address is provided.
-    static let apiURL = URL(string: "https://api.github.com/repos/QuinnTang74/3106/releases/latest")!
-    static let fallbackURL = URL(string: "https://github.com/QuinnTang74/3106/releases/latest")!
+    
+    // Apontado para o repositório do próprio app e para o seu site, sem
+    // consultar o projeto original. Sem manifesto, o aviso automático de
+    // atualização não aparece.
+    static let apiURL = URL(string: "https://api.github.com/repos/demasx-pc/filza-teste/releases/latest")!
+    static let fallbackURL = URL(string: "https://zyo.se/demarte")!
 
-    /// Static manifests first. The unauthenticated GitHub API is rate limited
-    /// (60 req/h per shared IP) and returns 403 on some networks, which made
-    /// "check for updates" dead even when a plain file download still worked.
-    /// raw.githubusercontent has the shortest propagation; jsDelivr's two
-    /// hosts cover the case where GitHub itself is unreachable.
-    static let manifestURLs = [
-        URL(string: "https://raw.githubusercontent.com/QuinnTang74/3106/main/update.json")!,
-        URL(string: "https://cdn.jsdelivr.net/gh/QuinnTang74/3106@main/update.json")!,
-        URL(string: "https://fastly.jsdelivr.net/gh/QuinnTang74/3106@main/update.json")!,
-    ]
+    static let manifestURLs: [URL] = []
 
     struct Offer: Identifiable {
         let id = UUID()
