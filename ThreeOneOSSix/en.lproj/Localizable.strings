@@ -1,7 +1,7 @@
 "app.subtitle" = "Editor MobileGestalt";
 "app.capability_editor" = "Editor de recursos MobileGestalt";
 "common.close" = "Fechar";
-"common.done" = "Bjs DO DEMAS";
+"common.done" = "Concluído 👽";
 "common.ok" = "OK";
 "common.cancel" = "Cancelar";
 "common.delete" = "Excluir";
@@ -18,7 +18,7 @@
 "update.message" = "DEMAS-PRODUCT %@ está disponível no GitHub.";
 "update.agree" = "Atualizar";
 "update.dismiss" = "Não mostrar novamente";
-"patch.error.wrong_password" = "Senha incorreta.";
+"patch.error.wrong_password" = "Senha errada jumento.";
 
 "attribution.title" = "Sobre o DEMAS-PRODUCT";
 "attribution.subtitle" = "Informações do projeto";
@@ -167,14 +167,14 @@
 "patch.create_from_browser_failed" = "Não Foi Possível Criar o Patch";
 "patch.password" = "Senha";
 "patch.password_optional" = "Senha opcional";
-"patch.password_locked" = "Senha protegida pelo demarte, nem tenta!!";
+"patch.password_locked" = "Senha protegida pelo demas";
 "patch.no_password" = "Sem senha";
 "patch.password_immutable_footer" = "Opcional. Não pode ser alterada após a criação do projeto.";
 "patch.password_existing_footer" = "Esta configuração não pode ser alterada após a criação.";
 "patch.password_once_message" = "Após um desbloqueio bem-sucedido, este dispositivo memoriza a chave do conteúdo — não a senha.";
 "patch.password_repo_contact" = "Este repositório não compartilha a senha. Entre em contato com o proprietário de %@ para obtê-la. Após desbloquear, este dispositivo memoriza apenas a chave do conteúdo — não a senha.";
 "patch.unlock" = "Desbloquear";
-"patch.apply" = "ATIVAR VENENO";
+"patch.apply" = "Ativar xit";
 "patch.restore" = "Restaurar Original";
 "patch.reset" = "Redefinir para o Pacote";
 "patch.apply_footer" = "A aplicação fica bloqueada enquanto este patch estiver ativo. Feche os aplicativos de destino antes de redefinir ou restaurar os arquivos.";
@@ -753,7 +753,7 @@
 "home.section.apps" = "Apps e Patches";
 "home.section.data" = "Dados e Ferramentas";
 "home.section.about" = "Sobre";
-"home.card.patches" = "Injetar o veneno do demas";
+"home.card.patches" = "Produtos Demarte";
 "home.card.patches_detail" = "Importe, aplique e seja feliz !!";
 "home.card.market" = "Loja de Repositórios";
 "home.card.market_detail" = "Navegue por novos pacotes e atualizações";
