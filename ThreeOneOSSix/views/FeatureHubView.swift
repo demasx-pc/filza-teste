@@ -15,95 +15,101 @@ struct FeatureHubView: View {
     let onOpenSettings: () -> Void
     let onOpenLogs: () -> Void
 
+    /// false = versão limpa (esconde as ferramentas avançadas dos clientes).
+    /// true = mostra tudo como era antes.
+    private var mostrarFerramentasAvancadas: Bool { false }
+
     var body: some View {
         NavigationStack {
             List {
-                Section {
-                    LabeledContent(language.text("home.version"), value: appVersion)
-                    LabeledContent(
-                        language.text("home.backend"),
-                        value: SandboxAccess.backend.displayName
-                    )
-                    if SandboxAccess.needsWorseQuery {
+                if mostrarFerramentasAvancadas {
+                    Section {
+                        LabeledContent(language.text("home.version"), value: appVersion)
                         LabeledContent(
-                            language.text("home.app_group"),
-                            value: appGroupText
+                            language.text("home.backend"),
+                            value: SandboxAccess.backend.displayName
                         )
-                        if SandboxAccess.appGroup == nil {
-                            Text(language.text("home.app_group_warning"))
-                                .font(.caption)
-                                .foregroundStyle(.orange)
+                        if SandboxAccess.needsWorseQuery {
+                            LabeledContent(
+                                language.text("home.app_group"),
+                                value: appGroupText
+                            )
+                            if SandboxAccess.appGroup == nil {
+                                Text(language.text("home.app_group_warning"))
+                                    .font(.caption)
+                                    .foregroundStyle(.orange)
+                            }
                         }
-                    }
-                } header: {
-                    Text(language.text("home.status"))
-                }
-
-                Section {
-                    NavigationLink {
-                        GestaltCardsView()
-                    } label: {
-                        card(
-                            "home.card.gestalt",
-                            detail: "home.card.gestalt_detail",
-                            icon: "cpu.fill"
-                        )
+                    } header: {
+                        Text(language.text("home.status"))
                     }
 
-                    NavigationLink {
-                        KeypadThemeView()
-                    } label: {
-                        card(
-                            "home.card.keypad",
-                            detail: "home.card.keypad_detail",
-                            icon: "circle.grid.3x3.fill"
-                        )
-                    }
+                    Section {
+                        NavigationLink {
+                            GestaltCardsView()
+                        } label: {
+                            card(
+                                "home.card.gestalt",
+                                detail: "home.card.gestalt_detail",
+                                icon: "cpu.fill"
+                            )
+                        }
 
-                    NavigationLink {
-                        SupervisedModeView()
-                    } label: {
-                        card(
-                            "home.card.supervised",
-                            detail: "home.card.supervised_detail",
-                            icon: "checkmark.shield"
-                        )
-                    }
+                        NavigationLink {
+                            KeypadThemeView()
+                        } label: {
+                            card(
+                                "home.card.keypad",
+                                detail: "home.card.keypad_detail",
+                                icon: "circle.grid.3x3.fill"
+                            )
+                        }
 
-                    NavigationLink {
-                        SystemSettingsView()
-                    } label: {
-                        card(
-                            "home.card.systemsettings",
-                            detail: "home.card.systemsettings_detail",
-                            icon: "text.bubble"
-                        )
-                    }
+                        NavigationLink {
+                            SupervisedModeView()
+                        } label: {
+                            card(
+                                "home.card.supervised",
+                                detail: "home.card.supervised_detail",
+                                icon: "checkmark.shield"
+                            )
+                        }
 
-                    NavigationLink {
-                        LaunchArtworkView()
-                    } label: {
-                        card(
-                            "home.card.launchartwork",
-                            detail: "home.card.launchartwork_detail",
-                            icon: "photo.on.rectangle.angled"
-                        )
-                    }
+                        NavigationLink {
+                            SystemSettingsView()
+                        } label: {
+                            card(
+                                "home.card.systemsettings",
+                                detail: "home.card.systemsettings_detail",
+                                icon: "text.bubble"
+                            )
+                        }
 
-                    NavigationLink {
-                        WallpaperLabView(
-                            onOpenSettings: onOpenSettings,
-                            onOpenLogs: onOpenLogs
-                        )
-                    } label: {
-                        card(
-                            "home.card.wallpapers",
-                            detail: "home.card.wallpapers_detail",
-                            icon: "photo.on.rectangle.angled"
-                        )
+                        NavigationLink {
+                            LaunchArtworkView()
+                        } label: {
+                            card(
+                                "home.card.launchartwork",
+                                detail: "home.card.launchartwork_detail",
+                                icon: "photo.on.rectangle.angled"
+                            )
+                        }
+
+                        NavigationLink {
+                            WallpaperLabView(
+                                onOpenSettings: onOpenSettings,
+                                onOpenLogs: onOpenLogs
+                            )
+                        } label: {
+                            card(
+                                "home.card.wallpapers",
+                                detail: "home.card.wallpapers_detail",
+                                icon: "photo.on.rectangle.angled"
+                            )
+                        }
+                    } header: {
+                        Text(language.text("home.section.device"))
                     }
-                } header: {
-                    Text(language.text("home.section.device"))
                 }
 
                 Section {
@@ -120,152 +126,158 @@ struct FeatureHubView: View {
                         )
                     }
 
-                    NavigationLink {
-                        RepositoryNewView(
-                            onOpenSettings: onOpenSettings,
-                            onOpenLogs: onOpenLogs
-                        )
-                    } label: {
-                        card(
-                            "home.card.market",
-                            detail: "home.card.market_detail",
-                            icon: "sparkles"
-                        )
-                    }
+                    if mostrarFerramentasAvancadas {
+                        NavigationLink {
+                            RepositoryNewView(
+                                onOpenSettings: onOpenSettings,
+                                onOpenLogs: onOpenLogs
+                            )
+                        } label: {
+                            card(
+                                "home.card.market",
+                                detail: "home.card.market_detail",
+                                icon: "sparkles"
+                            )
+                        }
 
-                    NavigationLink {
-                        RepositorySourcesView(
-                            onOpenSettings: onOpenSettings,
-                            onOpenLogs: onOpenLogs
-                        )
-                    } label: {
-                        card(
-                            "home.card.sources",
-                            detail: "home.card.sources_detail",
-                            icon: "shippingbox.fill"
-                        )
+                        NavigationLink {
+                            RepositorySourcesView(
+                                onOpenSettings: onOpenSettings,
+                                onOpenLogs: onOpenLogs
+                            )
+                        } label: {
+                            card(
+                                "home.card.sources",
+                                detail: "home.card.sources_detail",
+                                icon: "shippingbox.fill"
+                            )
+                        }
                     }
                 } header: {
                     Text(language.text("home.section.apps"))
                 }
 
-                Section {
-                    Button {
-                        onSelectTab(.files)
-                    } label: {
-                        card(
-                            "home.card.files",
-                            detail: "home.card.files_detail",
-                            icon: "folder.fill"
-                        )
-                    }
-                    .buttonStyle(.plain)
+                if mostrarFerramentasAvancadas {
+                    Section {
+                        Button {
+                            onSelectTab(.files)
+                        } label: {
+                            card(
+                                "home.card.files",
+                                detail: "home.card.files_detail",
+                                icon: "folder.fill"
+                            )
+                        }
+                        .buttonStyle(.plain)
 
-                    Button {
-                        onSelectTab(.search)
-                    } label: {
-                        card(
-                            "home.card.search",
-                            detail: "home.card.search_detail",
-                            icon: "magnifyingglass"
-                        )
-                    }
-                    .buttonStyle(.plain)
+                        Button {
+                            onSelectTab(.search)
+                        } label: {
+                            card(
+                                "home.card.search",
+                                detail: "home.card.search_detail",
+                                icon: "magnifyingglass"
+                            )
+                        }
+                        .buttonStyle(.plain)
 
-                    Button {
-                        onSelectTab(.cleaner)
-                    } label: {
-                        card(
-                            "home.card.cleaner",
-                            detail: "home.card.cleaner_detail",
-                            icon: "sparkles"
-                        )
-                    }
-                    .buttonStyle(.plain)
+                        Button {
+                            onSelectTab(.cleaner)
+                        } label: {
+                            card(
+                                "home.card.cleaner",
+                                detail: "home.card.cleaner_detail",
+                                icon: "sparkles"
+                            )
+                        }
+                        .buttonStyle(.plain)
 
-                    NavigationLink {
-                        NotificationSoundView()
-                    } label: {
-                        card(
-                            "home.card.sounds",
-                            detail: "home.card.sounds_detail",
-                            icon: "speaker.wave.2.fill"
-                        )
-                    }
+                        NavigationLink {
+                            NotificationSoundView()
+                        } label: {
+                            card(
+                                "home.card.sounds",
+                                detail: "home.card.sounds_detail",
+                                icon: "speaker.wave.2.fill"
+                            )
+                        }
 
-                    NavigationLink {
-                        BackupCenterView()
-                    } label: {
-                        card(
-                            "home.card.backups",
-                            detail: "home.card.backups_detail",
-                            icon: "externaldrive.fill"
-                        )
-                    }
+                        NavigationLink {
+                            BackupCenterView()
+                        } label: {
+                            card(
+                                "home.card.backups",
+                                detail: "home.card.backups_detail",
+                                icon: "externaldrive.fill"
+                            )
+                        }
 
-                    NavigationLink {
-                        WiFiShareView()
-                    } label: {
-                        card(
-                            "home.card.wifishare",
-                            detail: "home.card.wifishare_detail",
-                            icon: "wifi"
-                        )
-                    }
+                        NavigationLink {
+                            WiFiShareView()
+                        } label: {
+                            card(
+                                "home.card.wifishare",
+                                detail: "home.card.wifishare_detail",
+                                icon: "wifi"
+                            )
+                        }
 
-                    NavigationLink {
-                        AppSaveBackupView()
-                    } label: {
-                        card(
-                            "home.card.savebackups",
-                            detail: "home.card.savebackups_detail",
-                            icon: "arrow.down.doc.fill"
-                        )
-                    }
+                        NavigationLink {
+                            AppSaveBackupView()
+                        } label: {
+                            card(
+                                "home.card.savebackups",
+                                detail: "home.card.savebackups_detail",
+                                icon: "arrow.down.doc.fill"
+                            )
+                        }
 
-                    NavigationLink {
-                        FileReplaceView()
-                    } label: {
-                        card(
-                            "home.card.filereplace",
-                            detail: "home.card.filereplace_detail",
-                            icon: "arrowshape.replace.forward.fill"
-                        )
-                    }
+                        NavigationLink {
+                            FileReplaceView()
+                        } label: {
+                            card(
+                                "home.card.filereplace",
+                                detail: "home.card.filereplace_detail",
+                                icon: "arrowshape.replace.forward.fill"
+                            )
+                        }
 
-                    NavigationLink {
-                        MigrationView()
-                    } label: {
-                        card(
-                            "home.card.migration",
-                            detail: "home.card.migration_detail",
-                            icon: "arrow.left.arrow.right.square.fill"
-                        )
+                        NavigationLink {
+                            MigrationView()
+                        } label: {
+                            card(
+                                "home.card.migration",
+                                detail: "home.card.migration_detail",
+                                icon: "arrow.left.arrow.right.square.fill"
+                            )
+                        }
+                        .badge(taskCenter.pendingResumes.count)
+                    } header: {
+                        Text(language.text("home.section.data"))
                     }
-                    .badge(taskCenter.pendingResumes.count)
-                } header: {
-                    Text(language.text("home.section.data"))
                 }
 
                 Section {
-                    NavigationLink {
-                        LogView()
-                    } label: {
-                        card(
-                            "home.card.logs",
-                            detail: "home.card.logs_detail",
-                            icon: "apple.terminal.fill"
-                        )
-                    }
+                    if mostrarFerramentasAvancadas {
+                        NavigationLink {
+                            LogView()
+                        } label: {
+                            card(
+                                "home.card.logs",
+                                detail: "home.card.logs_detail",
+                                icon: "apple.terminal.fill"
+                            )
+                        }
 
-                    NavigationLink {
-                        AcknowledgementsView()
-                    } label: {
-                        card(
-                            "home.card.ack",
-                            detail: "home.card.ack_detail",
-                            icon: "heart.text.square.fill"
-                        )
+                        NavigationLink {
+                            AcknowledgementsView()
+                        } label: {
+                            card(
+                                "home.card.ack",
+                                detail: "home.card.ack_detail",
+                                icon: "heart.text.square.fill"
+                            )
+                        }
                     }
 
                     RespringButton()
