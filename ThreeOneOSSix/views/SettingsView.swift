@@ -17,7 +17,7 @@ struct SettingsView: View {
 
     /// false = versão limpa (esconde as opções avançadas dos clientes).
     /// true = mostra tudo como era antes.
-    private var mostrarFerramentasAvancadas: Bool { false }
+    private var mostrarFerramentasAvancadas: Bool { true }
 
     private func checkUpdateManually() {
         isCheckingUpdate = true
