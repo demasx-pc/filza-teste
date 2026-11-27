@@ -15,6 +15,10 @@ struct SettingsView: View {
     @State private var updateURL: URL?
     @State private var isCheckingUpdate = false
 
+    /// false = versão limpa (esconde as opções avançadas dos clientes).
+    /// true = mostra tudo como era antes.
+    private var mostrarFerramentasAvancadas: Bool { false }
+
     private func checkUpdateManually() {
         isCheckingUpdate = true
         updateStatus = nil
@@ -83,116 +87,118 @@ struct SettingsView: View {
                     .pickerStyle(.inline)
                 }
 
-                Section {
-                    NavigationLink {
-                        BackupCenterView()
-                    } label: {
-                        Label(
-                            language.text("backup.title"),
-                            systemImage: "externaldrive.badge.timemachine"
-                        )
-                    }
-
-                    NavigationLink {
-                        AcknowledgementsView()
-                    } label: {
-                        Label(
-                            language.text("ack.title"),
-                            systemImage: "heart.text.square.fill"
-                        )
-                    }
-
-                    RespringButton()
-                } header: {
-                    Text(language.text("settings.backup"))
-                }
-
-                Section {
-                    Toggle(isOn: $soundEffectsEnabled) {
-                        Label(
-                            language.text("settings.sound_effects"),
-                            systemImage: "speaker.wave.2"
-                        )
-                    }
-                    // W5d: store-artwork fallback for icon-less migration
-                    // rows; off keeps the app fully offline.
-                    Toggle(isOn: Binding(
-                        get: { StoreIconFallbackService.isEnabled },
-                        set: { StoreIconFallbackService.setEnabled($0) }
-                    )) {
-                        Label(
-                            language.text("settings.storeicon_fallback"),
-                            systemImage: "network"
-                        )
-                    }
-                } header: {
-                    Text(language.text("settings.sound_effects"))
-                } footer: {
-                    Text(language.text("settings.sound_effects_footer"))
-                }
-
-                Section {
-                    Button {
-                        checkUpdateManually()
-                    } label: {
-                        HStack {
-                            Label(
-                                language.text("settings.check_update"),
-                                systemImage: "arrow.triangle.down.circle"
-                            )
-                            Spacer()
-                            if isCheckingUpdate {
-                                ProgressView().controlSize(.small)
-                            } else if let updateStatus {
-                                Text(updateStatus)
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
-                            }
-                        }
-                    }
-                    .disabled(isCheckingUpdate)
-
-                    if let updateURL {
-                        Link(destination: updateURL) {
-                            Label(language.text("update.open_download"), systemImage: "safari")
-                                .foregroundStyle(AppTheme.accent)
-                        }
-                    }
-                } header: {
-                    Text(language.text("settings.update_header"))
-                } footer: {
-                    Text(language.text("settings.update_footer"))
-                }
-
-                Section {
-                    Toggle(isOn: $experimentalFeaturesEnabled) {
-                        Label(
-                            language.text("settings.experimental"),
-                            systemImage: "flask"
-                        )
-                    }
-                } header: {
-                    Text(language.text("settings.experimental_header"))
-                } footer: {
-                    Text(language.text("settings.experimental_footer"))
-                }
-
-                if WallpaperFeatureSupportPolicy.isSupported(
-                    major: AppInfo.versionTuple.major
-                ) {
+                if mostrarFerramentasAvancadas {
                     Section {
                         NavigationLink {
-                            WallpaperResetSettingsView()
+                            BackupCenterView()
                         } label: {
                             Label(
-                                language.text("wallpaper.reset"),
-                                systemImage: "arrow.counterclockwise"
+                                language.text("backup.title"),
+                                systemImage: "externaldrive.badge.timemachine"
+                            )
+                        }
+
+                        NavigationLink {
+                            AcknowledgementsView()
+                        } label: {
+                            Label(
+                                language.text("ack.title"),
+                                systemImage: "heart.text.square.fill"
+                            )
+                        }
+
+                        RespringButton()
+                    } header: {
+                        Text(language.text("settings.backup"))
+                    }
+
+                    Section {
+                        Toggle(isOn: $soundEffectsEnabled) {
+                            Label(
+                                language.text("settings.sound_effects"),
+                                systemImage: "speaker.wave.2"
+                            )
+                        }
+                        // W5d: store-artwork fallback for icon-less migration
+                        // rows; off keeps the app fully offline.
+                        Toggle(isOn: Binding(
+                            get: { StoreIconFallbackService.isEnabled },
+                            set: { StoreIconFallbackService.setEnabled($0) }
+                        )) {
+                            Label(
+                                language.text("settings.storeicon_fallback"),
+                                systemImage: "network"
                             )
                         }
                     } header: {
-                        Text(language.text("tab.wallpapers"))
+                        Text(language.text("settings.sound_effects"))
                     } footer: {
-                        Text(language.text("wallpaper.reset_settings_footer"))
+                        Text(language.text("settings.sound_effects_footer"))
+                    }
+
+                    Section {
+                        Button {
+                            checkUpdateManually()
+                        } label: {
+                            HStack {
+                                Label(
+                                    language.text("settings.check_update"),
+                                    systemImage: "arrow.triangle.down.circle"
+                                )
+                                Spacer()
+                                if isCheckingUpdate {
+                                    ProgressView().controlSize(.small)
+                                } else if let updateStatus {
+                                    Text(updateStatus)
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
+                                }
+                            }
+                        }
+                        .disabled(isCheckingUpdate)
+
+                        if let updateURL {
+                            Link(destination: updateURL) {
+                                Label(language.text("update.open_download"), systemImage: "safari")
+                                    .foregroundStyle(AppTheme.accent)
+                            }
+                        }
+                    } header: {
+                        Text(language.text("settings.update_header"))
+                    } footer: {
+                        Text(language.text("settings.update_footer"))
+                    }
+
+                    Section {
+                        Toggle(isOn: $experimentalFeaturesEnabled) {
+                            Label(
+                                language.text("settings.experimental"),
+                                systemImage: "flask"
+                            )
+                        }
+                    } header: {
+                        Text(language.text("settings.experimental_header"))
+                    } footer: {
+                        Text(language.text("settings.experimental_footer"))
+                    }
+
+                    if WallpaperFeatureSupportPolicy.isSupported(
+                        major: AppInfo.versionTuple.major
+                    ) {
+                        Section {
+                            NavigationLink {
+                                WallpaperResetSettingsView()
+                            } label: {
+                                Label(
+                                    language.text("wallpaper.reset"),
+                                    systemImage: "arrow.counterclockwise"
+                                )
+                            }
+                        } header: {
+                            Text(language.text("tab.wallpapers"))
+                        } footer: {
+                            Text(language.text("wallpaper.reset_settings_footer"))
+                        }
                     }
                 }
 
@@ -201,10 +207,12 @@ struct SettingsView: View {
                     LabeledContent(language.text("settings.ios_version"), value: "\(AppInfo.osVersion) (\(AppInfo.osBuild))")
                     LabeledContent(language.text("settings.access_backend"), value: SandboxAccess.backend.displayName)
                     LabeledContent(language.text("settings.app_group"), value: appGroupStatus)
-                    NavigationLink {
-                        SandboxDiagnosticsView()
-                    } label: {
-                        Label(language.text("sandbox.diag.title"), systemImage: "stethoscope")
+                    if mostrarFerramentasAvancadas {
+                        NavigationLink {
+                            SandboxDiagnosticsView()
+                        } label: {
+                            Label(language.text("sandbox.diag.title"), systemImage: "stethoscope")
+                        }
                     }
                 }
 
@@ -249,9 +257,9 @@ struct SettingsView: View {
                     if let destination = URL(string: "https://zyo.se/demarte") {
                         Link(destination: destination) {
                             HStack(spacing: 12) {
-                                Label("Compras aqui", systemImage: "link")
+                                Label("SITE OFICIAL DEMARTE", systemImage: "link")
                                 Spacer()
-                                Text("zyo.se/demarte")
+                                Text("DEMARTE CLIQUE AQUI")
                                     .font(.caption)
                                     .foregroundStyle(.secondary)
                             }
@@ -281,5 +289,4 @@ struct SettingsView: View {
         guard SandboxAccess.needsWorseQuery else { return "—" }
         return SandboxAccess.appGroup ?? language.text("settings.app_group_missing")
     }
-
-    }
+}
