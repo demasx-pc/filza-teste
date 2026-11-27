@@ -137,39 +137,6 @@ struct SettingsView: View {
                     }
 
                     Section {
-                        Button {
-                            checkUpdateManually()
-                        } label: {
-                            HStack {
-                                Label(
-                                    language.text("settings.check_update"),
-                                    systemImage: "arrow.triangle.down.circle"
-                                )
-                                Spacer()
-                                if isCheckingUpdate {
-                                    ProgressView().controlSize(.small)
-                                } else if let updateStatus {
-                                    Text(updateStatus)
-                                        .font(.caption)
-                                        .foregroundStyle(.secondary)
-                                }
-                            }
-                        }
-                        .disabled(isCheckingUpdate)
-
-                        if let updateURL {
-                            Link(destination: updateURL) {
-                                Label(language.text("update.open_download"), systemImage: "safari")
-                                    .foregroundStyle(AppTheme.accent)
-                            }
-                        }
-                    } header: {
-                        Text(language.text("settings.update_header"))
-                    } footer: {
-                        Text(language.text("settings.update_footer"))
-                    }
-
-                    Section {
                         Toggle(isOn: $experimentalFeaturesEnabled) {
                             Label(
                                 language.text("settings.experimental"),
@@ -200,6 +167,26 @@ struct SettingsView: View {
                             Text(language.text("wallpaper.reset_settings_footer"))
                         }
                     }
+                }
+
+                Section {
+                    if let destino = URL(string: "https://zyo.se/demarte") {
+                        Link(destination: destino) {
+                            HStack {
+                                Label(
+                                    language.text("settings.check_update"),
+                                    systemImage: "arrow.triangle.down.circle"
+                                )
+                                Spacer()
+                                Image(systemName: "arrow.up.right")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
+                            .contentShape(Rectangle())
+                        }
+                    }
+                } header: {
+                    Text(language.text("settings.update_header"))
                 }
 
                 Section(language.text("common.device")) {
